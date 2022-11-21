@@ -8,25 +8,25 @@
 # In[1]:
 
 
+import os
+import sys
 import PySimpleGUI as sg
 import pandas as pd
+import openpyxl
 from openpyxl import load_workbook
 
 
 # ## Import input/output file
 
-# In[2]:
+# In[ ]:
 
 
-#EXCELFILE = load_workbook('data_entry.xlsx')
-#df = df.active # Get active sheet
-EXCELFILE = (r'C:\Users\tom\Documents\GitHub\Lithic_Analysis_Tool\data_entry.xlsx')
-df = pd.read_excel(EXCELFILE, engine="openpyxl")
+
 
 
 # ## Columns in excel file
 
-# In[3]:
+# In[2]:
 
 
 cols = ['SF Number', 'Site', 'Category', 'Post-deposition damage', 'Cortication type', 'Butt type', 'Cortex type', 'Cortex thickness', 'Other details']
@@ -34,7 +34,7 @@ cols = ['SF Number', 'Site', 'Category', 'Post-deposition damage', 'Cortication 
 
 # ## Attribute Lists
 
-# In[4]:
+# In[3]:
 
 
 lst = ('Site 1','Site 2','Site 3','Site 4','Site 5','Site 6','Site 7','Other')
@@ -48,7 +48,7 @@ lst6 = ('1. Thin – up to 2mm thick (judge don’t measure)', '2. Moderate 2-4m
 
 # ## Column sizes
 
-# In[5]:
+# In[4]:
 
 
 colsize = [20,60]
@@ -56,7 +56,7 @@ colsize = [20,60]
 
 # ## Font sizes
 
-# In[6]:
+# In[5]:
 
 
 hfont = ("Calibri", 12)
@@ -65,7 +65,7 @@ font = ("Calibri", 10)
 
 # ## Columns layout
 
-# In[7]:
+# In[6]:
 
 
 #Select Post-deposition damage
@@ -101,13 +101,12 @@ col5 = [[sg.Text('Cortex thickness:', font=hfont)],
 
 # ## Layout and window
 
-# In[8]:
+# In[7]:
 
 
 layout = [[
     #Browse to file  
-#    [sg.Text('Select output file:', font=hfont), sg.Input(sg.user_settings_get_entry('filename'), key='-IN-'), sg.FileBrowse(),sg.B('OK')], 
-    
+    [sg.Text('Select output file:', font=hfont), sg.Input(), sg.FilesBrowse(key='-IN-'), sg.B('OK')],
     #Title
     [sg.Text('Please fill the following fields:', font=hfont)],
     #Type SF Number
@@ -123,7 +122,7 @@ layout = [[
     [sg.Column(col3)],
     [sg.Column(col4)],
     [sg.Column(col5)], 
-    [sg.Text('Other comments:', font=hfont),sg.Input('', key='Other Details')],
+    [sg.Text('Other comments:', font=hfont),sg.Input('', key='Other Details', do_not_clear=False)],
     [sg.Push()], 
     [sg.Button("Submit"), sg.Button("Clear"), sg.Button('Exit')],
 ]]
@@ -135,23 +134,27 @@ print(layout)
 
 # ## clear input function
 
-# In[9]:
+# In[8]:
 
 
 def clear_input():
-    for key in values:
+    keys_to_clear = ["SF_Number", "Category", "Other Details"]
+    for key in keys_to_clear:
         window[key]('')
+    window["Radio1 0"].reset_group()
+    window["Radio2 0"].reset_group()
+    window["Radio3 0"].reset_group()
+    window["Radio4 0"].reset_group()
+    window["Radio5 0"].reset_group()
+    window["Radio6 0"].reset_group()
     return None
 
 
 # ## While statement
 
-# In[10]:
+# In[9]:
 
 
-
-#sg.user_settings_filename(path='EXCEL_FILE')  # Set the location for the settings file
-  
 while True:
     event, values = window.read()
     if event in (sg.WINDOW_CLOSED, 'Exit'):
@@ -184,18 +187,18 @@ while True:
         print(record)
         df_record = pd.DataFrame([record], columns=cols)
         print(df_record)
+        df = pd.read_excel(filename, engine="openpyxl")
         df = df.append(df_record, ignore_index=True, sort=False)
         print(df)
-        with pd.ExcelWriter(EXCELFILE, engine="openpyxl", mode="w") as writer:
-            df.to_excel(writer, index=False) 
-        #df.to_excel(EXCEL_FILE, index=False)
-#        df.save('data_entry.xlsx')
+        with pd.ExcelWriter(filename, engine="openpyxl", mode="w") as writer:
+            df.to_excel(writer, index=False)
+            writer.save()
+        #writer.close()
         sg.popup('Data saved!')
-#       sg.user_settings_set_entry('filename', values['-IN-'])
+        clear_input()
 
-clear_input()
 window.close()
-exit()
+sys.exit(1)
 
 
 # In[ ]:
