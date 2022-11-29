@@ -5,13 +5,14 @@
 
 # ## Import libraries and modules
 
-# In[1]:
+# In[6]:
 
 
 import os
 import sys
 import PySimpleGUI as sg
 import pandas as pd
+import textwrap as wrap
 import openpyxl
 from openpyxl import load_workbook
 
@@ -26,7 +27,7 @@ from openpyxl import load_workbook
 
 # ## Columns in excel file
 
-# In[2]:
+# In[7]:
 
 
 cols = ['SF Number', 'Site', 'Category', 'Post-deposition damage', 'Cortication type', 'Butt type', 'Cortex type', 'Cortex thickness', 'Other details']
@@ -34,7 +35,7 @@ cols = ['SF Number', 'Site', 'Category', 'Post-deposition damage', 'Cortication 
 
 # ## Attribute Lists
 
-# In[3]:
+# In[10]:
 
 
 lst = ('Site 1','Site 2','Site 3','Site 4','Site 5','Site 6','Site 7','Other')
@@ -48,7 +49,7 @@ lst6 = ('1. Thin – up to 2mm thick (judge don’t measure)', '2. Moderate 2-4m
 
 # ## Column sizes
 
-# In[4]:
+# In[ ]:
 
 
 colsize = [20,60]
@@ -56,7 +57,7 @@ colsize = [20,60]
 
 # ## Font sizes
 
-# In[5]:
+# In[ ]:
 
 
 hfont = ("Calibri", 12)
@@ -65,7 +66,7 @@ font = ("Calibri", 10)
 
 # ## Columns layout
 
-# In[6]:
+# In[ ]:
 
 
 #Select Post-deposition damage
@@ -101,12 +102,12 @@ col5 = [[sg.Text('Cortex thickness:', font=hfont)],
 
 # ## Layout and window
 
-# In[7]:
+# In[ ]:
 
 
 layout = [[
     #Browse to file  
-    [sg.Text('Select output file:', font=hfont), sg.Input(), sg.FilesBrowse(key='-IN-'), sg.B('OK')],
+    [sg.Text('Select output file:', font=hfont), sg.Input(), sg.FilesBrowse(file_types=(("XLSX Files", "*.xlsx"), ("CSV Files", "*.csv*")), key='-IN-')],# sg.B('OK')],
     #Title
     [sg.Text('Please fill the following fields:', font=hfont)],
     #Type SF Number
@@ -129,12 +130,13 @@ layout = [[
 
 window = sg.Window("Jacobi: Lithic Analyis Data Entry Tool v0.5", layout, resizable=True, element_justification='l', finalize=True)
 
+
 print(layout)
 
 
 # ## clear input function
 
-# In[8]:
+# In[ ]:
 
 
 def clear_input():
@@ -152,7 +154,7 @@ def clear_input():
 
 # ## While statement
 
-# In[9]:
+# In[ ]:
 
 
 while True:
@@ -161,10 +163,10 @@ while True:
         break
     if event == 'Clear':
         clear_input()
-    if event == "OK":
-        filename = values['-IN-']
+#    if event == "OK":
+#        filename = values['-IN-']
     elif event == 'Submit':
-       
+        filename = values['-IN-']       
         radio_value = window['Radio1 0'].TKIntVar.get()
         text = lst[radio_value % 1000] if radio_value else None
         
@@ -198,7 +200,7 @@ while True:
         clear_input()
 
 window.close()
-sys.exit(1)
+sys.exit()
 
 
 # In[ ]:
